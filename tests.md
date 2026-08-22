@@ -32,13 +32,6 @@ keep transcripts readable. Nothing else has been altered.
 **Baseline dataset:** `cap-data.csv` contains 20 records — **17 valid,
 3 invalid**. Of the 17 valid, 14 are Expense and 3 are Income.
 
-### Scope
-
-These tests cover `main.py`, the menu-driven command-line program. `gui_main.py`
-is not covered by this suite. It imports its validation and calculation
-functions from `main.py` rather than reimplementing them, so the rules verified
-here apply to both — but the Tkinter interface layer itself is untested.
-
 ### Revision history
 
 | Rev | Against commit | Change |
