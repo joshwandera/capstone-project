@@ -1,8 +1,8 @@
 # Capstone Project: Personal Expense and Budget Tracker
 
-A menu-driven Python program that helps an individual monitor income, expenses, budgets and payment methods. It loads a dataset of transactions, validates every record against a set of rules, rejects and explains bad records, and produces income/expenditure summaries, budget warnings and payment-method summaries.
+This is a menu-based Python program for tracking income, expenses, budgets and payment methods. It reads the transaction dataset, checks each record, keeps the valid ones, explains the invalid ones, and prints summaries for income, spending, budgets and payment methods.
 
-The core program (`main.py`) is written in **core Python only**, with no Pandas, NumPy, charts or third-party libraries.
+The main program (`main.py`) uses **core Python only**. There is no Pandas, NumPy, charting library or other third-party package.
 
 > **Group Members:**
 >
@@ -15,12 +15,6 @@ The core program (`main.py`) is written in **core Python only**, with no Pandas,
 
 ---
 
-## Group members
-
--
-
----
-
 ## Table of contents
 
 - [Problem definition](#problem-definition)
@@ -29,16 +23,15 @@ The core program (`main.py`) is written in **core Python only**, with no Pandas,
 - [Requirements](#requirements)
 - [How to run](#how-to-run)
   - [Command-line version](#command-line-version-mainpy)
-  - [GUI version (extra)](#gui-version-extra--gui_mainpy)
+  - [GUI version extra](#gui-version-extra)
 - [The menu](#the-menu)
 - [Validation rules](#validation-rules)
-- [Data standardization](#data-standardization)
+- [Transaction type handling](#transaction-type-handling)
 - [Functions overview](#functions-overview)
 - [Dataset](#dataset)
 - [Extras we did](#extras-we-did)
 - [Testing](#testing)
 - [Git workflow](#git-workflow)
-- [Group members](#group-members)
 - [License](#license)
 
 ---
@@ -47,7 +40,7 @@ The core program (`main.py`) is written in **core Python only**, with no Pandas,
 
 A person needs a simple, reliable way to track personal finances. The supplied dataset contains deliberate anomalies, such as missing values, negative values, and unrecognized categories, that the program must detect and handle safely rather than crash on or silently accept.
 
-The program must:
+The program needs to:
 
 - Store the transaction records using an appropriate core-Python data structure.
 - Validate every record and report rejected records with a reason.
@@ -55,19 +48,19 @@ The program must:
 - Calculate expense totals by category and identify the highest-spending category.
 - Compare category expenditure against budget limits and warn when exceeded.
 - Count transactions by payment method.
-- Provide a repeating menu until the user chooses to exit.
+- Keep showing the menu until the user chooses to exit.
 
 ## Objectives
 
-- Translate a realistic data problem into a structured, modular, tested program.
-- Practise algorithm design, validation and core Python (loops, decisions, functions, data structures) rather than advanced libraries.
-- Cleanly separate calculation logic from display logic so the same functions can be reused (by both the CLI and the GUI).
+- Turn a realistic data problem into a clear, modular Python program.
+- Practise algorithm design, validation and core Python basics like loops, decisions, functions and data structures.
+- Keep calculation logic separate from display logic so the CLI and GUI can use the same functions.
 
 ---
 
 ## Repository structure
 
-```
+```text
 capstone-project/
 ├── README.md
 ├── main.py            # Command-line program (core Python only)
@@ -85,25 +78,26 @@ capstone-project/
 
 ## Requirements
 
-- **Python 3** (developed and tested on Python 3.14; any recent Python 3 works).
-- **No third-party packages.** `main.py` uses only the standard-library `csv` module.
-- **`cap-data.csv`** must be present in the same directory as the program, because the program reads (and, when a transaction is added, writes) that file by relative path.
-- The GUI (`gui_main.py`) uses only `tkinter`, which ships with the standard CPython distribution. You can install it by running:
+- **Python 3**. This was developed and tested on Python 3.14, but any recent Python 3 version should work.
+- **No third-party packages.** `main.py` only uses Python's built-in `csv` module.
+- Keep **`cap-data.csv`** in the same folder as the program. The program reads from it, and when a transaction is added it writes back to it.
+- The GUI (`gui_main.py`) uses `tkinter`, which normally comes with standard CPython. If it is missing, install it with:
 
-**macOS**
+### macOS
 
 ```bash
 brew install python-tk
 ```
 
-**Ubuntu linux**
+### Ubuntu linux
 
 ```bash
 sudo apt update && sudo apt install python3-tk
 ```
 
-**Windows**
-> Tkinter comes pre-installed in windows binaries unless it was unselected during installation. Check [this guide](https://www.pythonguis.com/installation/install-tkinter-windows/) for more info
+### Windows
+
+> Tkinter usually comes with the Windows Python installer unless it was left out during installation. This guide may help: <https://www.pythonguis.com/installation/install-tkinter-windows/>
 
 To check your Python version:
 
@@ -124,25 +118,25 @@ cd capstone-project
 
 ### Command-line version (`main.py`)
 
-This is the primary deliverable.
+Run the project by:
 
 ```bash
 python3 main.py
 ```
 
-You will be shown the menu; type a number (1–7) and press Enter. The menu repeats until you choose **7. Exit**.
+The program shows a menu. Type a number from 1 to 7 and press Enter. It keeps looping until you choose **7. Exit**.
 
-> **Note on persistence:** adding a transaction (menu option 2 > 1) appends it to `cap-data.csv` immediately. If you add test records while trying the program, restore the dataset afterwards with `git restore cap-data.csv` so you don't accidentally commit test rows.
+> **Note on saved data:** adding a transaction through menu option 2 > 1 writes it to `cap-data.csv` straight away. If you add test records, restore the file afterwards with `git restore cap-data.csv` so those rows are not committed by mistake.
 
-### GUI version (extra) `gui_main.py`
+### GUI version extra
 
-A **Tkinter** interface built on top of the same logic. It imports the validation and calculation functions directly from `main.py`, so both versions always stay in sync and are covered by the same tests.
+A **Tkinter** interface is included as an extra. It imports the validation and calculation functions from `main.py`, so the CLI and GUI use the same logic.
 
 ```bash
 python3 gui_main.py
 ```
 
-The seven menu operations map to six tabs plus an Exit button:
+The seven CLI menu options map to six GUI tabs plus an Exit button:
 
 | CLI menu option | GUI tab / control |
 | --- | --- |
@@ -160,7 +154,7 @@ Run `gui_main.py` from the same folder as `main.py` and `cap-data.csv`.
 
 ## The menu
 
-```
+```text
 === Personal Expense and Budget Tracker ===
 1. View valid transactions
 2. Add or search a transaction
@@ -171,13 +165,13 @@ Run `gui_main.py` from the same folder as `main.py` and `cap-data.csv`.
 7. Exit
 ```
 
-The menu is implemented with a `while` loop, `input()`, an `if`/`elif`/`else` chain and `break`, as required. Each non-exit option calls a separate function, and an invalid selection displays an error and returns to the menu.
+The menu uses a `while` loop, `input()`, an `if`/`elif`/`else` chain and `break`. Each option calls its own function. If the user enters an invalid option, the program shows an error and returns to the menu.
 
 ---
 
 ## Validation rules
 
-A record is accepted only when all of the following hold true, otherwise it is rejected and reported with a reason:
+A record is accepted only if it passes these checks. If it fails, the program keeps it out of the valid records and shows the reason.
 
 - **Transaction type** is `Income` or `Expense`.
 - **Amount** is numeric and greater than zero.
@@ -186,15 +180,15 @@ A record is accepted only when all of the following hold true, otherwise it is r
 
 Invalid records are excluded from all calculations and are viewable via menu option 5.
 
-## Data standardization
+## Transaction type handling
 
-Only recognized alternatives with a **defined mapping** are standardized; anything else is left unchanged so it is correctly rejected rather than guessed at. The transaction-type mapping normalizes common aliases (e.g. `income`, `inc`, `in` for `Income`; `expense`, `exp`, `ex` for `Expense`). A value such as `EXP` that is not in the map is passed through unchanged and flagged as an **unrecognized** transaction type.
+The program accepts `Income` and `Expense` as transaction types. Other values are left unchanged and rejected, so the program does not guess what a value like `EXP` was supposed to mean.
 
 ---
 
 ## Functions overview
 
-The code deliberately separates **calculation** functions (which return data and never print) from **display** functions (which format and print). This is what lets the CLI and GUI share identical logic.
+The code keeps **calculation** functions separate from **display** functions. The calculation functions return data. The display functions print it. That is how the CLI and GUI can share the same logic.
 
 | Function | Role |
 | --- | --- |
@@ -221,18 +215,18 @@ Full step-by-step pseudocode for each function is in [pseudocode.md](pseudocode.
 `cap-data.csv` contains **20 records** with
 the following columns:
 
-```
+```text
 transaction_id, transaction_type, category, description,
 amount_kes, budget_limit_kes, payment_method
 ```
 
-Of the 20 records, **17 are valid and 3 are invalid** by design:
+Of the 20 records, **17 are valid and 3 are invalid**:
 
 - `TX005` - negative amount.
 - `TX011` - unrecognized transaction type (`EXP`).
 - `TX016` - missing category on an expense.
 
-These anomalies exercise the validation and error-reporting paths.
+These records are useful because they show that the validation and error messages work.
 
 ---
 
@@ -240,10 +234,10 @@ These anomalies exercise the validation and error-reporting paths.
 
 Beyond the required command-line deliverable, we went further for practice:
 
-- **Tkinter GUI (`gui_main.py`):** a full graphical version that reuses the exact same validation and calculation functions from `main.py`, so nothing is reimplemented and both stay consistent.
-- **Add & persist:** new transactions can be added interactively and are written back to `cap-data.csv`.
-- **Dual budget warnings:** warnings at both the individual-transaction level and the category-aggregate level.
-- **Comprehensive test suite:** 15 documented test cases in [tests.md](tests.md) with captured terminal evidence and a resolved defect log.
+- **Tkinter GUI (`gui_main.py`):** a graphical version that reuses the validation and calculation functions from `main.py`.
+- **Add & persist:** new transactions can be added interactively and written back to `cap-data.csv`.
+- **Dual budget warnings:** warnings are shown for individual transactions and for whole categories.
+- **Test suite:** 15 documented test cases in [tests.md](tests.md), with terminal evidence and a closed defect log.
 - **Exploratory notebook:** `Budget tracker.ipynb` for experimentation.
 
 ---
@@ -260,8 +254,8 @@ categories:
 - **Search** - existing item, non-existing item and multiple results.
 - **Menu** - invalid option repeats the menu; Exit terminates cleanly.
 
-All 15 tests pass and the defect log is closed. Each test includes a captured
-terminal transcript and, where relevant, an arithmetic cross-check.
+All 15 tests pass, and the defect log is closed. Each test includes a captured
+terminal transcript and, where useful, an arithmetic check.
 
 To reproduce, run `python3 main.py` and enter the inputs listed for each test.
 
@@ -269,10 +263,9 @@ To reproduce, run `python3 main.py` and enter the inputs listed for each test.
 
 ## Git workflow
 
-- Repository initialized at the start of development.
-- Multiple meaningful commits with descriptive messages showing progressive
-  development.
-- Source, README, tests and algorithm documents are all tracked.
+- The repository was initialized at the start of development.
+- The commit history shows the project being built up in stages.
+- Source files, README, tests and algorithm documents are tracked.
 - The final version is tagged `v1.0`.
 - No passwords, keys or unnecessary system files are committed.
 
