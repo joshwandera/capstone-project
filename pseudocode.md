@@ -1,14 +1,14 @@
-# Personal Expense and Budget Tracker — Pseudocode
+# Personal Expense and Budget Tracker - Pseudocode
 
-This pseudocode reflects the structure of `main.py` (and applies equally to
-`gui_main.py`, which reuses the same functions). It is organized by function,
-matching the required coding tasks in the brief.
+This pseudocode follows the structure of `main.py`. It also applies to
+`gui_main.py`, because the GUI reuses the same functions. The sections are
+split by function so they line up with the main parts of the project brief.
 
 ---
 
 ## 1. LOAD_TRANSACTIONS
 
-```
+```text
 FUNCTION load_transactions():
     OPEN 'cap-data.csv' for reading
     READ header row to get field names
@@ -19,7 +19,6 @@ FUNCTION load_transactions():
         CONVERT row["budget_limit_kes"] to a float
         FOR EACH text field in row:
             STRIP leading/trailing whitespace
-        row["transaction_type"] <- standardize_transaction_type(row["transaction_type"])
         APPEND row to data
 
     RETURN data
@@ -28,32 +27,9 @@ END FUNCTION
 
 ---
 
-## 1b. STANDARDIZE_TRANSACTION_TYPE
-
-```
-// Only recognized alternatives (defined in TRANSACTION_TYPE_MAP) are
-// standardized. Anything not in the map is returned unchanged, so it is
-// still correctly caught as "unrecognized transaction_type" by
-// validate_transaction() rather than being silently guessed at.
-TRANSACTION_TYPE_MAP <- {
-    "income": "Income", "inc": "Income", "in": "Income",
-    "expense": "Expense", "exp": "Expense", "ex": "Expense"
-}
-
-FUNCTION standardize_transaction_type(tx_type):
-    key <- tx_type, stripped, lowercased
-    IF key is in TRANSACTION_TYPE_MAP:
-        RETURN TRANSACTION_TYPE_MAP[key]
-    ELSE:
-        RETURN tx_type, stripped   // unchanged; will fail validation as unrecognized
-END FUNCTION
-```
-
----
-
 ## 2. VALIDATE_TRANSACTION (single record)
 
-```
+```text
 FUNCTION validate_transaction(record):
     CREATE empty list: reasons
 
@@ -91,7 +67,7 @@ END FUNCTION
 
 ## 3. VALIDATE_ALL (whole dataset)
 
-```
+```text
 FUNCTION validate_all(transactions):
     CREATE empty lists: valid_records, invalid_records
 
@@ -110,11 +86,10 @@ END FUNCTION
 
 ## 4. ADD_TRANSACTION
 
-```
+```text
 FUNCTION add_transaction(transactions):
     PROMPT for: ID, Category, Description
     PROMPT for: Type
-    type <- standardize_transaction_type(Type)   // same mapping as load_transactions
 
     TRY:
         amount <- CONVERT input "Amount" to float
@@ -147,7 +122,7 @@ END FUNCTION
 
 ## 5. WRITE_TRANSACTIONS
 
-```
+```text
 FUNCTION write_transactions(transactions):
     IF transactions is empty:
         DISPLAY "No transactions to write."
@@ -163,7 +138,7 @@ END FUNCTION
 
 ## 6. SEARCH_TRANSACTION
 
-```
+```text
 FUNCTION search_transaction(valid_records):
     PROMPT "Search by Transaction ID or Category"
     term <- input, lowercased, stripped
@@ -185,7 +160,7 @@ END FUNCTION
 
 ## 7. CALCULATE_SUMMARY
 
-```
+```text
 FUNCTION calculate_summary(valid_records):
     total_income <- 0
     total_expenditure <- 0
@@ -207,7 +182,7 @@ END FUNCTION
 
 ## 8. HIGHEST_SPENDING_CATEGORY
 
-```
+```text
 FUNCTION highest_spending_category(valid_records):
     (_, _, _, category_totals) <- calculate_summary(valid_records)
     IF category_totals is empty:
@@ -228,7 +203,7 @@ END FUNCTION
 
 ## 9. CHECK_INDIVIDUAL_BUDGET_WARNINGS
 
-```
+```text
 FUNCTION check_individual_budget_warnings(valid_records):
     CREATE empty list: warnings
 
@@ -245,7 +220,7 @@ END FUNCTION
 
 ## 10. CHECK_CATEGORY_BUDGET_SUMMARY
 
-```
+```text
 FUNCTION check_category_budget_summary(valid_records):
     category_totals  <- empty map   // spent per category
     category_budgets <- empty map   // combined budget limit per category
@@ -270,7 +245,7 @@ END FUNCTION
 
 ## 11. CALCULATE_PAYMENT_METHOD_TOTALS
 
-```
+```text
 FUNCTION calculate_payment_method_totals(valid_records):
     method_data <- empty map
 
@@ -290,7 +265,7 @@ END FUNCTION
 
 ## 12. MAIN PROGRAM LOOP
 
-```
+```text
 FUNCTION main():
     transactions <- load_transactions()
     (valid_records, invalid_records) <- validate_all(transactions)
@@ -345,22 +320,17 @@ CALL main()
 ## Notes
 
 - The **calculation** functions (`calculate_summary`, `highest_spending_category`,
-  `check_individual_budget_warnings`, `check_category_budget_summary`,
-  `calculate_payment_method_totals`) return data only — they never print or
-  prompt. This is intentional: it lets the CLI and GUI share the exact same
-  logic and lets each function be tested independently (see the test plan).
+    `check_individual_budget_warnings`, `check_category_budget_summary`,
+    `calculate_payment_method_totals`) only return data. They do not print or ask
+    for input. This lets the CLI and GUI share the same logic, and it also makes
+    the functions easier to test on their own.
 - The **display** functions (`display_table`, `display_summary`,
-  `display_all_budget_warnings`, `display_payment_summary`,
-  `display_invalid_table`) do the printing/formatting and call the
-  calculation functions above rather than repeating their logic.
-- `validate_transaction()` is the single source of truth for all four
-  validation rules, and is called both when loading the CSV at startup
-  (`validate_all`) and when adding a new record (`add_transaction`), so
-  a record can never bypass validation through either path.
-- `standardize_transaction_type()` is likewise called from both entry
-  points (`load_transactions` and `add_transaction`), *before*
-  validation runs, so a recognized alias (e.g. `"EXP"`) is normalized
-  the same way whether it comes from the CSV or from user input. Only
-  aliases explicitly listed in `TRANSACTION_TYPE_MAP` are touched;
-  anything else is passed through unchanged and correctly rejected by
-  `validate_transaction()` as an unrecognized type.
+    `display_all_budget_warnings`, `display_payment_summary`,
+    `display_invalid_table`) handle the printing and formatting. They call the
+    calculation functions instead of doing the calculations again.
+- `validate_transaction()` handles the four validation rules. It is called when
+    the CSV is loaded and when a new transaction is added, so both paths use the
+    same checks.
+- Transaction types are not guessed or normalized. The program accepts `Income`
+    and `Expense`; other values stay unchanged and are rejected by
+    `validate_transaction()` as unrecognized.
