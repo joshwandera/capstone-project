@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Personal Expense and Budget Tracker — GUI version
+Personal Expense and Budget Tracker - GUI version
 
 This file adds a Tkinter interface on top of the existing program logic.
-It does NOT reimplement any validation or calculation rules — it imports
+It does NOT reimplement any validation or calculation rules - it imports
 them directly from main.py, so both the CLI (main.py) and this GUI stay
 in sync and are tested against the same functions.
 
