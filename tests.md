@@ -35,7 +35,7 @@ keep transcripts readable. Nothing else has been altered.
 ### Revision history
 
 | Rev | Against commit | Change |
-|---|---|---|
+| --- | --- | --- |
 | 1 | `61205e9` | 14 test cases documented |
 | 2 | `61205e9` | Captured terminal evidence added for every test; defects D1–D3 raised |
 | 3 | `bfc98ce` | Re-run after the invalid-records and add-confirmation tables were added; D1 upgraded to Medium |
@@ -47,18 +47,18 @@ keep transcripts readable. Nothing else has been altered.
 ## Test 1: Normal Operation - Valid Transaction Accepted
 
 | Attribute | Value |
-|-----------|-------|
+| ----------- | ------- |
 | **Test ID** | T001 |
 | **Category** | Normal |
 | **Objective** | Verify that a complete, valid transaction is accepted, added, confirmed on screen and persisted to disk |
-| **Input** | Menu 2 → 1 (add):<br>ID: TX999, Type: Expense, Category: Food, Description: Groceries, Amount: 2500, Budget: 5000, Payment: Card |
+| **Input** | Menu 2 → 1 (add): ID: TX999, Type: Expense, Category: Food, Description: Groceries, Amount: 2500, Budget: 5000, Payment: Card |
 | **Expected Result** | Transaction validates, is appended to the list, written to CSV, "Transaction added successfully." is displayed, and the new record is echoed back as a table |
 | **Actual Result** | As expected - success message, confirmation table showing `2500.00`, and new row written to `cap-data.csv` |
 | **Status** | **PASS** |
 
-### Evidence
+### Evidence for T001
 
-```
+```text
 Enter selection: 2
 1. Add a transaction
 2. Search a transaction
@@ -91,7 +91,7 @@ Transaction added successfully.
 the in-memory record, so on its own it does not prove the record reached disk.
 Last line of `cap-data.csv` after the session ended:
 
-```
+```bash
 $ tail -1 cap-data.csv
 TX999,Expense,Food,Groceries,2500.0,5000.0,Card
 ```
@@ -105,19 +105,19 @@ TX999,Expense,Food,Groceries,2500.0,5000.0,Card
 ## Test 2: Invalid Operation - Missing Required Category
 
 | Attribute | Value |
-|-----------|-------|
+| ----------- | ------- |
 | **Test ID** | T002 |
 | **Category** | Invalid |
 | **Objective** | Verify that an Expense transaction without a category is rejected, with the reason reported |
-| **Input** | Menu 2 → 1 (add):<br>ID: TX998, Type: Expense, Category: *(empty)*, Description: Office supplies, Amount: 1500, Budget: 2000, Payment: Bank |
+| **Input** | Menu 2 → 1 (add): ID: TX998, Type: Expense, Category: *(empty)*, Description: Office supplies, Amount: 1500, Budget: 2000, Payment: Bank |
 | **Expected Result** | Validation fails; a "Transaction rejected" block with a "Reasons" heading lists "missing category for expense"; record not added |
 | **Actual Result** | As expected - rejection block displayed, record not appended, control returned to menu |
 | **Status** | **PASS** |
 | **Notes** | All seven prompts are collected before validation runs - contrast with T012 |
 
-### Evidence
+### Evidence for T002
 
-```
+```text
 --- Add new transaction ---
 
 
@@ -145,7 +145,7 @@ prints the reasons block and skips `append`.
 ## Test 3: Invalid Operation - Negative Amount
 
 | Attribute | Value |
-|-----------|-------|
+| ----------- | ------- |
 | **Test ID** | T003 |
 | **Category** | Invalid |
 | **Objective** | Verify that a record with a negative amount is rejected at load time and reported with its reason |
@@ -155,9 +155,9 @@ prints the reasons block and skips `append`.
 | **Status** | **PASS** |
 | **Notes** | Amounts must be strictly greater than zero; zero and negative are both rejected |
 
-### Evidence
+### Evidence for T003
 
-```
+```text
 Enter selection: 5
 
  Showing invalid records
@@ -185,19 +185,19 @@ dropped.
 ## Test 4: Boundary Test - Amount Exactly Equal to Budget Limit
 
 | Attribute | Value |
-|-----------|-------|
+| ----------- | ------- |
 | **Test ID** | T004 |
 | **Category** | Boundary |
 | **Objective** | Verify a transaction whose amount **equals** its budget limit is accepted and **not** flagged |
-| **Input** | Menu 2 → 1 (add): ID: TX997, Type: Expense, Category: Transport, Description: Boundary equal, Amount: 5000, Budget: 5000, Payment: Card<br>Then Menu option 4 |
+| **Input** | Menu 2 → 1 (add): ID: TX997, Type: Expense, Category: Transport, Description: Boundary equal, Amount: 5000, Budget: 5000, Payment: Card Then Menu option 4 |
 | **Expected Result** | Transaction accepted; TX997 does **not** appear in the individual warnings table |
 | **Actual Result** | As expected - added successfully, and absent from the warnings table |
 | **Status** | **PASS** |
 | **Notes** | The comparison is `amount > budget`, not `>=`, so equality does not trigger a warning |
 
-### Evidence
+### Evidence for T004
 
-```
+```text
 Transaction ID: TX997
 Type (Income/Expense): Expense
 Category: Transport
@@ -260,19 +260,19 @@ dropped would leave both figures unchanged.
 ## Test 5: Boundary Test - Amount Just Over Budget Limit
 
 | Attribute | Value |
-|-----------|-------|
+| ----------- | ------- |
 | **Test ID** | T005 |
 | **Category** | Boundary |
 | **Objective** | Verify a transaction marginally **over** its budget limit is flagged, and that the overage is reported accurately |
-| **Input** | Menu 2 → 1 (add): ID: TX996, Type: Expense, Category: Transport, Description: Boundary over, Amount: 5000.01, Budget: 5000, Payment: Card<br>Then Menu option 4 |
+| **Input** | Menu 2 → 1 (add): ID: TX996, Type: Expense, Category: Transport, Description: Boundary over, Amount: 5000.01, Budget: 5000, Payment: Card Then Menu option 4 |
 | **Expected Result** | Transaction accepted; TX996 appears in the individual warnings table showing an overage of `0.01` |
 | **Actual Result** | As expected - flagged, with the overage displayed correctly as `0.01` |
 | **Status** | **PASS** |
 | **Notes** | This test originally exposed defect D1, where the overage displayed as `0`. **It now verifies the fix** |
 
-### Evidence
+### Evidence for T005
 
-```
+```text
 Transaction ID: TX996
 Type (Income/Expense): Expense
 Category: Transport
@@ -312,9 +312,9 @@ TX996      Transport       5000.01      5000.00      0.01
 ### Regression check - D1 fix verified
 
 | | Revisions 2–3 | Revision 5 |
-|---|---|---|
-| Confirmation table | `5000` | `5000.01` ✓ |
-| Warnings row | `5000  5000  0` | `5000.01  5000.00  0.01` ✓ |
+| --- | --- | --- |
+| Confirmation table | `5000` | `5000.01` - fixed |
+| Warnings row | `5000  5000  0` | `5000.01  5000.00  0.01` - fixed |
 
 The underlying detection was always correct - confirmed at revision 2 by calling
 the function directly, which returned `'over': 0.010000000000218279`. Only the
@@ -328,7 +328,7 @@ flagged, 5000.01 is.
 ## Test 6: Search Operation - Existing Transaction by ID
 
 | Attribute | Value |
-|-----------|-------|
+| ----------- | ------- |
 | **Test ID** | T006 |
 | **Category** | Search |
 | **Objective** | Verify that searching by transaction ID returns the matching record |
@@ -338,9 +338,9 @@ flagged, 5000.01 is.
 | **Status** | **PASS** |
 | **Notes** | Search is case-insensitive; the term is lowercased before comparison, which is why the title reads `'tx001'` |
 
-### Evidence
+### Evidence for T006
 
-```
+```text
 Search by Transaction ID or Category: TX001
 
 +--------------------------------------------------------------------------------------------------+
@@ -357,7 +357,7 @@ Search by Transaction ID or Category: TX001
 ## Test 7: Search Operation - Non-Existing Transaction
 
 | Attribute | Value |
-|-----------|-------|
+| ----------- | ------- |
 | **Test ID** | T007 |
 | **Category** | Search |
 | **Objective** | Verify that searching for a non-existent record returns the appropriate message rather than an error |
@@ -367,9 +367,9 @@ Search by Transaction ID or Category: TX001
 | **Status** | **PASS** |
 | **Notes** | `TX404` was chosen deliberately because `TX999` is created by T001; reusing it would make this test order-dependent |
 
-### Evidence
+### Evidence for T007
 
-```
+```text
 Search Transaction
 
 Search by Transaction ID or Category: TX404
@@ -381,7 +381,7 @@ No matching transactions found.
 ## Test 8: Search Operation - Multiple Records by Category
 
 | Attribute | Value |
-|-----------|-------|
+| ----------- | ------- |
 | **Test ID** | T008 |
 | **Category** | Search |
 | **Objective** | Verify that searching by category returns **all** matching transactions |
@@ -391,9 +391,9 @@ No matching transactions found.
 | **Status** | **PASS** |
 | **Notes** | Matching is **exact and case-insensitive**, not substring - searching `Trans` returns no results |
 
-### Evidence
+### Evidence for T008
 
-```
+```text
 Search by Transaction ID or Category: Transport
 
 +--------------------------------------------------------------------------------------------------+
@@ -420,7 +420,7 @@ record removed by the D3 fix.)*
 ## Test 9: Menu Control - Invalid Menu Option
 
 | Attribute | Value |
-|-----------|-------|
+| ----------- | ------- |
 | **Test ID** | T009 |
 | **Category** | Menu |
 | **Objective** | Verify that an out-of-range menu selection is rejected and the menu repeats |
@@ -430,9 +430,9 @@ record removed by the D3 fix.)*
 | **Status** | **PASS** |
 | **Notes** | Handled by the `else` branch of the `if`/`elif` chain, as required by the brief |
 
-### Evidence
+### Evidence for T009
 
-```
+```text
 Enter selection: 9
 Invalid selection.
 
@@ -454,7 +454,7 @@ Program closed.
 ## Test 10: Menu Control - Exit Option Terminates Program
 
 | Attribute | Value |
-|-----------|-------|
+| ----------- | ------- |
 | **Test ID** | T010 |
 | **Category** | Menu |
 | **Objective** | Verify that option 7 terminates the program cleanly |
@@ -464,9 +464,9 @@ Program closed.
 | **Status** | **PASS** |
 | **Notes** | `break` exits the `while True` loop; added transactions were already written to CSV at add time, so no data is lost on exit |
 
-### Evidence
+### Evidence for T010
 
-```
+```text
 === Personal Expense and Budget Tracker ===
 1. View valid transactions
 2. Add or search a transaction
@@ -485,7 +485,7 @@ Program closed.
 ## Test 11: Data Validation - Unrecognized Transaction Type
 
 | Attribute | Value |
-|-----------|-------|
+| ----------- | ------- |
 | **Test ID** | T011 |
 | **Category** | Invalid |
 | **Objective** | Verify that an unrecognized transaction type is rejected rather than guessed at |
@@ -495,11 +495,11 @@ Program closed.
 | **Status** | **PASS** |
 | **Notes** | Only `Income` and `Expense` are accepted. `algorithm.md` now matches this behaviour - see D6 |
 
-### Evidence
+### Evidence for T011
 
 See the invalid-records table in **Test 3** - row two:
 
-```
+```text
 | TX011      | EXP      | Entertainment | Streaming          | 8409.0    | unrecognized transaction_type: 'EXP'     |
 ```
 
@@ -516,7 +516,7 @@ No mapping is defined for `EXP`, so rejection is the correct behaviour, and
 ## Test 12: Data Validation - Non-Numeric Amount
 
 | Attribute | Value |
-|-----------|-------|
+| ----------- | ------- |
 | **Test ID** | T012 |
 | **Category** | Invalid |
 | **Objective** | Verify that non-numeric input for amount is handled without crashing |
@@ -526,9 +526,9 @@ No mapping is defined for `EXP`, so rejection is the correct behaviour, and
 | **Status** | **PASS** |
 | **Notes** | The function returns **immediately** - the Budget and Payment prompts never appear, confirming the early `return` |
 
-### Evidence
+### Evidence for T012
 
-```
+```text
 --- Add new transaction ---
 
 
@@ -555,7 +555,7 @@ distinct rejection paths, and both are covered.
 ## Test 13: Summary Calculation - Totals, Balance and Highest Category
 
 | Attribute | Value |
-|-----------|-------|
+| ----------- | ------- |
 | **Test ID** | T013 |
 | **Category** | Normal |
 | **Objective** | Verify income, expenditure, balance, per-category totals and the highest-spending category are computed correctly from valid records only |
@@ -565,9 +565,9 @@ distinct rejection paths, and both are covered.
 | **Status** | **PASS** |
 | **Notes** | The highest-spending category line is new - it was added in response to D2. The three invalid records are excluded, as intended |
 
-### Evidence
+### Evidence for T013
 
-```
+```text
 Enter selection: 3
 
 ============================================================
@@ -596,30 +596,30 @@ Highest spending category      Housing (KES 33636.00)
 
 **Income** - the three valid Income records:
 
-```
+``` text
 TX006  4,814
 TX012  9,128
 TX018 13,442
 ------------
-      27,384   ✓ matches
+      27,384   matches
 ```
 
 **Category totals sum to total expenditure:**
 
-```
+```text
 Transport      30,760
 Housing        33,636
 Utilities      20,913
 Education      11,066
 Entertainment  12,723
 ---------------------
-              109,098   ✓ matches Total Expenditure
+              109,098   matches Total Expenditure
 ```
 
-**Balance:** 27,384 − 109,098 = **−81,714** ✓ matches
+**Balance:** 27,384 − 109,098 = **−81,714** - matches
 
 **Highest-spending category:** Housing at 33,636 is the largest of the five
-figures listed above ✓ - verified by inspection of the same table the program
+figures listed above - verified by inspection of the same table the program
 printed.
 
 The negative balance is correct for this dataset - 14 expenses against 3 income
@@ -634,7 +634,7 @@ also why the highest-spending category is now Housing rather than Transport.)*
 ## Test 14: Budget Warnings - Individual and Category Levels
 
 | Attribute | Value |
-|-----------|-------|
+| ----------- | ------- |
 | **Test ID** | T014 |
 | **Category** | Normal |
 | **Objective** | Verify warnings are produced at both the individual-transaction and category-aggregate levels |
@@ -644,9 +644,9 @@ also why the highest-spending category is now Housing rather than Transport.)*
 | **Status** | **PASS** |
 | **Notes** | The category view shows **all** categories with a status column, so a category being within budget is positively confirmed rather than merely absent |
 
-### Evidence
+### Evidence for T014
 
-```
+```text
 Enter selection: 4
 
 ================================================================================
@@ -678,15 +678,15 @@ Entertainment   12723.00     8000.00      OVER
 ### Spot-check of the logic
 
 **Individual level** - TX020: amount 14,880 against its own limit of 3,000.
-Over by 14,880 − 3,000 = **11,880.00** ✓ matches the printed row.
+Over by 14,880 − 3,000 = **11,880.00** - matches the printed row.
 
 **Category level** - Entertainment has one valid expense (TX017: 12,723,
 limit 8,000). TX011 is in the same category but invalid, so it is excluded.
-Spent 12,723 > budget 8,000 → **OVER** ✓ matches.
+Spent 12,723 > budget 8,000 → **OVER** - matches.
 
 **Cross-check** - the Spent column sums to
 30,760 + 33,636 + 20,913 + 11,066 + 12,723 = **109,098**, matching Total
-Expenditure in T013 ✓
+Expenditure in T013.
 
 **Why only Entertainment is OVER:** each category sums the budget limits of
 *all* its records, so multi-record categories accumulate a large combined
@@ -700,7 +700,7 @@ catches TX019.
 ## Test 15: Payment Summary - Counts and Totals by Method
 
 | Attribute | Value |
-|-----------|-------|
+| ----------- | ------- |
 | **Test ID** | T015 |
 | **Category** | Normal |
 | **Objective** | Verify the payment summary counts **all** valid transactions and totals amounts per payment method |
@@ -710,9 +710,9 @@ catches TX019.
 | **Status** | **PASS** |
 | **Notes** | This test previously failed as D4, when Income records were excluded and only 15 of 18 were counted. **It now verifies the fix** |
 
-### Evidence
+### Evidence for T015
 
-```
+```text
 Enter selection: 6
 
 ================================================================================
@@ -729,17 +729,17 @@ M-Pesa          4        33636.00        34500.00
 
 ### Completeness check - the check that originally found D4
 
-```
+```text
 Card 4 + Cash 5 + Bank 4 + M-Pesa 4 = 17
 ```
 
-The dataset has **17 valid transactions** (T-VIEW, T003). Every one is counted ✓
+The dataset has **17 valid transactions** (T-VIEW, T003). Every one is counted.
 
 **Amounts also reconcile:**
 
-```
+```text
 30,760 + 38,450 + 33,636 + 33,636 = 136,482
-Total Income 27,384 + Total Expenditure 109,098 = 136,482   ✓
+Total Income 27,384 + Total Expenditure 109,098 = 136,482   matches
 ```
 
 The Total Amount column now represents total transaction value rather than
@@ -753,7 +753,7 @@ expenditure only. Both are resolved.)*
 ## Test Summary
 
 | Test ID | Category | Description | Status |
-|---------|----------|-------------|--------|
+| --------- | ---------- | ------------- | -------- |
 | T001 | Normal | Valid transaction accepted, confirmed and persisted | PASS |
 | T002 | Invalid | Missing category rejected with reason | PASS |
 | T003 | Invalid | Negative amount rejected | PASS |
@@ -787,13 +787,13 @@ Six defects were raised across revisions 2–4. All six have been fixed and
 verified at commit `22e12fa`.
 
 | ID | Defect | Found by | Status |
-|---|---|---|---|
-| D1 | Sub-unit amounts displayed as whole numbers - an overage of 0.01 showed as 0 | T005 | ✅ Fixed - verified by T005 |
-| D2 | `highest_spending_category()` implemented but never called from any menu option | Call-site scan | ✅ Fixed - verified by T013 |
-| D3 | `TRX2000` present in `cap-data.csv` but absent from the source worksheet | Dataset comparison | ✅ Fixed - record removed |
-| D4 | Payment summary counted 15 of 18 valid transactions, excluding Income | T015 | ✅ Fixed - verified by T015 |
-| D5 | Three functions unreachable after the display refactor; calculation logic duplicated inside display functions | Call-site scan | ✅ Fixed - no unreachable functions remain |
-| D6 | `Algorithm` document described behaviour the code did not implement; no file extension | Document/code comparison | ✅ Fixed - reconciled and renamed `algorithm.md` |
+| --- | --- | --- | --- |
+| D1 | Sub-unit amounts displayed as whole numbers - an overage of 0.01 showed as 0 | T005 | Fixed - verified by T005 |
+| D2 | `highest_spending_category()` implemented but never called from any menu option | Call-site scan | Fixed - verified by T013 |
+| D3 | `TRX2000` present in `cap-data.csv` but absent from the source worksheet | Dataset comparison | Fixed - record removed |
+| D4 | Payment summary counted 15 of 18 valid transactions, excluding Income | T015 | Fixed - verified by T015 |
+| D5 | Three functions unreachable after the display refactor; calculation logic duplicated inside display functions | Call-site scan | Fixed - no unreachable functions remain |
+| D6 | `Algorithm` document described behaviour the code did not implement; no file extension | Document/code comparison | Fixed - reconciled and renamed `algorithm.md` |
 
 ### Verification of each fix
 

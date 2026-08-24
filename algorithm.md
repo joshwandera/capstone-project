@@ -1,60 +1,71 @@
-# FCC CAPSTONE PROJECT – ALGORITHM SUMMARY
+# FCC CAPSTONE PROJECT - ALGORITHM SUMMARY
 
-### 1. Store the transaction records
-- Load the records from `cap-data.csv` using Python's built-in `csv` module.
-- Store the records as a list of dictionaries.
-- Convert the amount and budget-limit fields to numeric values.
+## 1. Store the transaction records
 
-### 2. Define a function to validate transactions
+- Read the records from `cap-data.csv` using Python's built-in `csv` module.
+- Keep the records in a list of dictionaries.
+- Convert the amount and budget-limit fields into numbers.
+
+## 2. Define a function to validate transactions
+
 - Check that the transaction type is `Income` or `Expense`.
-- Check that the amount is numeric and greater than zero.
-- Check that the category is provided for `Expense` transactions.
+- Check that the amount is a number and is greater than zero.
+- Check that `Expense` transactions have a category.
 - Check that the budget limit is not negative.
 
-### 3. Define a function to view transactions
-- Display valid or invalid transactions according to the user's selection.
+## 3. Define a function to view transactions
 
-### 4. Define a function to add a transaction
-- Ask the user to enter the transaction details.
-- Validate the amount and budget limit.
-- Add the new transaction to the transaction list.
+- Show valid or invalid transactions based on what the user selects.
 
-### 5. Define a function to search for a transaction
+## 4. Define a function to add a transaction
+
+- Ask the user for the transaction details.
+- Check the amount and budget limit.
+- Add the new transaction to the list if it is valid.
+
+## 5. Define a function to search for a transaction
+
 - Ask the user for a transaction ID or category.
-- Search the transaction list.
-- Display the matching transaction or indicate that it was not found.
+- Search through the transaction list.
+- Show the matching transaction, or say that nothing was found.
 
-### 6. Define a function to calculate the income and expenditure summary
+## 6. Define a function to calculate the income and expenditure summary
+
 - Calculate total income.
 - Calculate total expenditure.
 - Calculate the balance.
 - Calculate category totals.
 - Identify the highest-spending category.
 
-### 7. Define a function to identify budget warnings
-- Compare each transaction's amount with its own budget limit and flag it when exceeded.
-- Calculate expenditure by category.
-- Compare category expenditure with the relevant budget.
-- Display a warning when expenditure exceeds the budget.
+## 7. Define a function to identify budget warnings
 
-### 8. Define a function to display invalid transactions
+- Compare each transaction's amount with its own budget limit and flag it if it goes over.
+- Calculate spending by category.
+- Compare each category's spending with its budget.
+- Show a warning when spending is above the budget.
+
+## 8. Define a function to display invalid transactions
+
 - Check each transaction using the validation function.
-- Display transactions that fail validation.
+- Show the transactions that fail validation.
 
-### 9. Define a function to display the payment summary
-- Count transactions according to payment method.
-- Display the totals.
+## 9. Define a function to display the payment summary
 
-### 10. Define a function to exit the program
+- Count transactions by payment method.
+- Show the totals.
 
-### 11. Ask the user to select an operation
-- If the selection is invalid, display an error message and return to the menu.
+## 10. Define a function to exit the program
 
-### 12. Call the function corresponding to the selected operation
-- Each non-exit menu option calls its appropriate function.
+## 11. Ask the user to select an operation
 
-### 13. Repeat the menu and operation selection until the user selects Exit
+- If the selection is invalid, show an error message and return to the menu.
 
-### 14. Display a closing message
+## 12. Call the function for the selected operation
 
-**END**
+- Each non-exit menu option calls the matching function.
+
+## 13. Repeat the menu and operation selection until the user selects Exit
+
+## 14. Display a closing message
+
+END
