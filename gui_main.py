@@ -289,13 +289,13 @@ class BudgetTrackerApp(tk.Tk):
     def _build_payment_tab(self):
         frame = ttk.Frame(self.tab_payment)
         frame.pack(fill="both", expand=True, padx=8, pady=8)
-        cols = ("method", "count", "amount", "budget")
-        headers = ("Method", "Count", "Total Amount", "Total Budget")
+        cols = ("method", "count", "amount")
+        headers = ("Method", "Count", "Total Amount")
         self.payment_tree = self._make_table(frame, cols, headers)
 
     def refresh_payment_tab(self):
         method_data = calculate_payment_method_totals(self.valid_records)
-        rows = [(method, data["count"], f"{data['amount']:.2f}", f"{data['budget']:.2f}")
+        rows = [(method, data["count"], f"{data['amount']:.2f}")
                 for method, data in method_data.items()]
         self._fill_table(self.payment_tree, rows)
 

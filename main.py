@@ -347,11 +347,11 @@ def display_payment_summary(valid_records):
     print("\n" + "=" * 80)
     print("PAYMENT METHOD SUMMARY")
     print("=" * 80)
-    print(f"{'Method':<15} {'Count':<8} {'Total Amount':<15} {'Total Budget':<15}")
+    print(f"{'Method':<15} {'Count':<8} {'Total Amount':<15}")
     print("-" * 80)
-    
+
     for method, data in method_data.items():
-        print(f"{method:<15} {data['count']:<8} {data['amount']:<15.2f} {data['budget']:<15.2f}")
+        print(f"{method:<15} {data['count']:<8} {data['amount']:<15.2f}")
     
     print("=" * 80 + "\n")
     
